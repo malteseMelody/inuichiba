@@ -1,9 +1,10 @@
 {
-  "name": "line-vercel-bot",
+  "name": "inuichiba",
   "version": "1.0.0",
   "dependencies": {
     "@line/bot-sdk": "^9.7.1",
     "axios": "^1.6.0",
+    "dotenv": "^16.4.7",
     "xlsx": "^0.18.5"
   }
 }

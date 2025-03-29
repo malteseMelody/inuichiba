@@ -35,7 +35,11 @@ function writeUserDataToExcel(groupId, userId, displayName, pictureUrl, statusMe
 
   const newSheet = XLSX.utils.aoa_to_sheet(data);
   workbook.Sheets[workbook.SheetNames[0]] = newSheet;
-  XLSX.writeFile(workbook, EXCEL_PATH);
+  if (process.env.NODE_ENV !== "production") {
+  	XLSX.writeFile(workbook, EXCEL_PATH);
+	} else {
+  	console.log("⚠ 本番環境ではExcel書き込みをスキップしました");
+	}
 }
 
 module.exports = {
