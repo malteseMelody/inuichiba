@@ -33,7 +33,7 @@ const msgPostpone = "メッセージありがとうございます！\n申し訳
 
 // //////////////////////////////////////////////////
 // 画像、動画の固定ディレクトリ
-const baseDir = "https://line-vercel-bot-public2.vercel.app/";
+const baseDir = "https://inuichiba.vercel.app/";
 
 
 // //////////////////////////////////////////////////

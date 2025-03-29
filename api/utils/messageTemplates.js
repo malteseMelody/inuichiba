@@ -29,13 +29,13 @@ const flex_message1 = {
     "contents": [
       {
         "type": "image",
-        "url": "https://line-vercel-bot-public2.vercel.app/carousel/cPark1.jpg",
+        "url": "https://inuichiba.vercel.app/carousel/cPark1.jpg",
         "size": "full",
         "aspectRatio": "1:1",
         "aspectMode": "fit",
         "action": {
           "type": "uri",
-          "uri": "https://line-vercel-bot-public2.vercel.app/carousel/cPark1detail.png"
+          "uri": "https://inuichiba.vercel.app/carousel/cPark1detail.png"
         }
       },
       {
@@ -63,13 +63,13 @@ const flex_message2 = {
     "contents": [
       {
         "type": "image",
-        "url": "https://line-vercel-bot-public2.vercel.app/carousel/cPark2.png",
+        "url": "https://inuichiba.vercel.app/carousel/cPark2.png",
         "size": "full",
         "aspectRatio": "1:1",
         "aspectMode": "fit",
         "action": {
           "type": "uri",
-          "uri": "https://line-vercel-bot-public2.vercel.app/carousel/cPark2detail.png"
+          "uri": "https://inuichiba.vercel.app/carousel/cPark2detail.png"
         }
       },
       {
@@ -97,13 +97,13 @@ const flex_message3 = {
     "contents": [
       {
         "type": "image",
-        "url": "https://line-vercel-bot-public2.vercel.app/carousel/cPark3.png",
+        "url": "https://inuichiba.vercel.app/carousel/cPark3.png",
         "size": "full",
         "aspectRatio": "1:1",
         "aspectMode": "fit",
         "action": {
           "type": "uri",
-          "uri": "https://line-vercel-bot-public2.vercel.app/carousel/cPark3detail.png"
+          "uri": "https://inuichiba.vercel.app/carousel/cPark3detail.png"
         }
       },
       {

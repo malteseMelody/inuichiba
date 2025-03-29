@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 // __dirname はこのファイル（excelWriter.js）がある場所
-// "../" で1つ上の line-vercel-bot-public2 に上がる
+// "../" で1つ上の inuichiiba に上がる
 const EXCEL_PATH = path.resolve(__dirname, "../data.xlsx");
 const HEADER = ["groupId", "userId", "displayName", "pictureUrl", "statusMessage"];
 
@@ -18,6 +18,11 @@ function ensureWorkbook() {
 }
 
 function writeUserDataToExcel(groupId, userId, displayName, pictureUrl, statusMessage) {
+  if (process.env.NODE_ENV == "Development") { 
+  	console.log("⚠ 本番環境ではExcel書き込みをスキップしました");
+  	return;
+  }
+  
   const workbook = ensureWorkbook();
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -35,11 +40,8 @@ function writeUserDataToExcel(groupId, userId, displayName, pictureUrl, statusMe
 
   const newSheet = XLSX.utils.aoa_to_sheet(data);
   workbook.Sheets[workbook.SheetNames[0]] = newSheet;
-  if (process.env.NODE_ENV !== "production") {
-  	XLSX.writeFile(workbook, EXCEL_PATH);
-	} else {
-  	console.log("⚠ 本番環境ではExcel書き込みをスキップしました");
-	}
+  
+  XLSX.writeFile(workbook, EXCEL_PATH);
 }
 
 module.exports = {
