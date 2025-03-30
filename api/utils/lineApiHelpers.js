@@ -1,9 +1,8 @@
-
-const axios = require('axios');
+import axios from 'axios';
 
 // ///////////////////////////////////////////////
 // Replyメッセージ送信
-async function sendReplyMessage(replyToken, messages, ACCESS_TOKEN) {
+export async function sendReplyMessage(replyToken, messages, ACCESS_TOKEN) {
   const url = 'https://api.line.me/v2/bot/message/reply';
 
   try {
@@ -20,17 +19,16 @@ async function sendReplyMessage(replyToken, messages, ACCESS_TOKEN) {
     console.log("LINEメッセージ送信成功", response.data);
   } catch (error) {
     if (error.response) {
-      console.error("❌LINEメッセージ送信失敗:", error.response.status);
+      console.error("❌ LINEメッセージ送信失敗:", error.response.status);
     } else {
-      console.error("❌ネットワークまたはaxiosレベルのエラー:", error.message);
+      console.error("❌ ネットワークまたはaxiosレベルのエラー:", error.message);
     }
   }
 }
 
-
 // ///////////////////////////////////////////////
 // プッシュメッセージ送信
-async function sendPushMessage(userId, messages, ACCESS_TOKEN) {
+export async function sendPushMessage(userId, messages, ACCESS_TOKEN) {
   const url = 'https://api.line.me/v2/bot/message/push';
 
   try {
@@ -53,10 +51,9 @@ async function sendPushMessage(userId, messages, ACCESS_TOKEN) {
   }
 }
 
-
 // //////////////////////////////////////////////////
 // LINEのユーザプロフィールをまとめて取得する
-async function getUserProfile(userId, ACCESS_TOKEN) {
+export async function getUserProfile(userId, ACCESS_TOKEN) {
   const url = `https://api.line.me/v2/bot/profile/${userId}`;
 
   try {
@@ -66,59 +63,9 @@ async function getUserProfile(userId, ACCESS_TOKEN) {
       }
     });
 
-    return response.data; // displayName, pictureUrl, statusMessage を含む
-
+    return response.data;
   } catch (error) {
     console.error("❌ ユーザープロフィール取得失敗:", error.message);
     return null;
   }
-};
-
-
-// //////////////////////////////////////////////////
-//アイコン画像のurlを取得する(アイコン未設定は未評価)
-async function getPictureUrl(userId, ACCESS_TOKEN) {
-  const url = `https://api.line.me/v2/bot/profile/${userId}`;
-
-  try {
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`
-      }
-    });
-
-    return response.data.pictureUrl;
-
-  } catch (error) {
-    console.error("写真未指定: ", error.message);
-    return null;
-  }
-};
-
-
-// //////////////////////////////////////////////////
-// ステータスメッセージを取得する
-async function getStatusMessage(userId, ACCESS_TOKEN) {
-  const url = `https://api.line.me/v2/bot/profile/${userId}`;
-
-  try {
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`
-      }
-    });
-
-    return response.data.statusMessage;
-
-  } catch (error) {
-    console.error("ステータスメッセージ未指定: ", error.message);
-    return null;
-  }
-};
-
-
-module.exports = {
-  sendReplyMessage,
-  sendPushMessage,
-	getUserProfile
-};
+}

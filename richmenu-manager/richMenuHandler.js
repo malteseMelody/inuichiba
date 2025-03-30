@@ -3,16 +3,22 @@
 // npm install @line/bot-sdk
 
 
-const line = require('@line/bot-sdk');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { Client } from '@line/bot-sdk'; 
+import * as messages from './data/messages.js'; // 使用されていないけど一応残しています
+
+// __dirname の再現（ESM用）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // LINE Bot SDKの初期設定
-const client = new line.Client({
-  channelAccessToken: 'ACCESS_TOKEN' // ← 環境変数にしてもOK
+const client = new Client({
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 });
 
-const fs = require('fs');
-const path = require('path');
-const messages = require('./data/messages');
 
 
 // //////////////////////////////////////////////////
@@ -33,19 +39,24 @@ const hTab  =  200;
 // 古いリッチメニューを削除し新しいリッチメニューを作成する
 // ここはメッセージを出さない
 // ファイルやリッチメニュー系のプログラムを修正したらここを実行すること
-async function handleRichMenu(ACCESS_TOKEN) {
+export async function handleRichMenu(ACCESS_TOKEN) {
   try {
   	// 今迄あったリッチメニューを削除
-  	await deleteRichMenusAndAliases();
+// 	await deleteRichMenusAndAliases();
   	
   	// リッチメニューを作成してリッチメニューIDを紐づける(リンクする)
-  	const aRichMenuId = aCreateRichMenu(ACCESS_TOKEN);
-  	const bRichMenuId = bCreateRichMenu(ACCESS_TOKEN); 
+  	const aRichMenuId = await aCreateRichMenu(ACCESS_TOKEN);
+  	const bRichMenuId = await bCreateRichMenu(ACCESS_TOKEN); 
+	
+	if (!aRichMenuId || !bRichMenuId) {
+		console.error("❌ リッチメニューIDが取得できませんでした。処理を中止します。");
+		return;	
+	}	
   	
   	// リッチメニューに画面を紐づける
   	// 既定値の画面を決める(最初にどちらのタブを出すか)
   	// エイリアスを設定する(タブ同士の行き来を可能にする)
-  	createRichMenus(aRichMenuId, bRichMenuId);
+  	await createRichMenus(aRichMenuId, bRichMenuId);
   	
   	return;
   	
@@ -69,19 +80,19 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
       	// タブA(左側のタブ)がタップされたらタブA画面に遷移する
         {
           bounds: { x: 0, y: 0, width: wTab, height: hTab },
-          action: { aliasId: "switch-to-a", data: "change to A" }
+          action: { type: "richmenuswitch", richMenuAliasId: "switch-to-a", data: "change to A" }
         },
       	// タブB(右側のタブ)がタップされたらタブB画面に遷移する
         {
           bounds: { x: wTab, y: 0, width: wTab, height: hTab },
-          action: { aliasId: "switch-to-b", data: "change to B" }
+          action: { type: "richmenuswitch", richMenuAliasId: "switch-to-b", data: "change to B" }
         },
       	// A1 EVENT
         {
           bounds: { x: 0, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA1" }
         },
-	      // A2 LET'S ENJOY CONTENTS
+	    // A2 LET'S ENJOY CONTENTS
         {
           bounds: { x: wItem, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA2" }
@@ -89,7 +100,7 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
       	// 指定されたurlを開く
         {
           bounds: { x: wItem*2, y: hTab, width: wItem*2, height: hItem },
-          action: { uri: "https://inuichiba.com/index.html" }
+          action: { type: "uri", uri: "https://inuichiba.com/index.html" }
         },
 	      
   	    // A3 MAP
@@ -97,27 +108,27 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
           bounds: { x: 0, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA3" }
         },
-	      // A4 PARKING
+	    // A4 PARKING
         {
           bounds: { x: wItem, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA4" }
         },
-	      // A5 GOOD MANNERS
+	    // A5 GOOD MANNERS
         {
           bounds: { x:wItem*2, y: (hTab+hItem), width: wItem*2, height: hItem },
           action: { type: "postback", data: "tap_richMenuA5" }
         }
     	]
-		};
+	};
   	
   	// リッチメニューを作りIdをもらう
-  	const richMenuId = await client.createRichMenu(richMenuA);
-  	console.log('aRichMenuId作成成功: ', richMenuId);
+  	const aRichMenuId = await client.createRichMenu(richmenuA);
+  	console.log('aRichMenuId作成成功: ', aRichMenuId);
   	
-  	return(richMenuId);
+  	return(aRichMenuId);
   	
 	} catch (error) {
-    	console.error('リッチメニュー作成エラー:', error);
+    	console.error('aRichMenuId作成エラー:', error);
   }  
   
 };
@@ -136,12 +147,12 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
       	// タブA(左側のタブ)がタップされたらタブA画面に遷移する
         {
           bounds: { x: 0, y: 0, width: wTab, height: hTab },
-          action: { aliasId: "switch-to-a", data: "change to A" }
+          action: { type: "richmenuswitch", richMenuAliasId: "switch-to-a", data: "change to A" }
         },
       	// タブB(右側のタブ)がタップされたらタブB画面に遷移する
         {
           bounds: { x: wTab, y: 0, width: wTab, height: hTab },
-          action: { aliasId: "switch-to-b", data: "change to B" }
+          action: { type: "richmenuswitch", richMenuAliasId: "switch-to-b", data: "change to B" }
         },
         // B1 EVENT
         {
@@ -156,7 +167,7 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
       	// 指定されたurlを開く
         {
           bounds: { x: wItem*2, y: hTab, width: wItem*2, height: hItem },
-          action: { uri: "https://inuichiba.com/index.html" }
+          action: { type: "uri", uri: "https://inuichiba.com/index.html" }
         },
 	      
   	    // B3 MAP
@@ -164,12 +175,12 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
           bounds: { x: 0, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB3" }
         },
-	      // B4 PARKING
+	    // B4 PARKING
         {
           bounds: { x: wItem, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB4" }
         },
-	      // B5 GOOD MANNERS
+	    // B5 GOOD MANNERS
         {
           bounds: { x:wItem*2, y:(hTab+hItem), width: wItem*2, height: hItem },
           action: { type: "postback", data: "tap_richMenuB5" }
@@ -178,7 +189,7 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
 		};
 		
   	// リッチメニューを作りIdをもらう
-  	const bRichMenuId = await client.createRichMenu(richMenuB);
+  	const bRichMenuId = await client.createRichMenu(richmenuB);
   	console.log('bRichMenuId作成: ', bRichMenuId);
   	
   	return(bRichMenuId);
@@ -198,12 +209,12 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
 async function createRichMenus(aRichMenuId, bRichMenuId) {
   try {
   	// リッチメニュー用画像ファイルをアップロードして紐づける
-  	const imageAPath = path.join(__dirname, 'images/tabA.png');
+	const imageAPath = path.join(__dirname, '../public/images/tabA.png');		
   	const imageAStream = fs.createReadStream(imageAPath);
   	await client.setRichMenuImage(aRichMenuId, imageAStream);
   	console.log('aRichMenu画像アップロード完了');
  	 	
-  	const imageBPath = path.join(__dirname, 'images/tabB.png');
+  	const imageBPath = path.join(__dirname, '../public/images/tabB.png');
   	const imageBStream = fs.createReadStream(imageBPath);
   	await client.setRichMenuImage(bRichMenuId, imageBStream);
   	console.log('bRichMenu画像アップロード完了');
@@ -213,10 +224,10 @@ async function createRichMenus(aRichMenuId, bRichMenuId) {
   	console.log('aRichMenuをデフォルトに設定');
   	
   	// エイリアスを定義する
-  	await client.createRichMenuAlias('switch-to-a', aRichMenuId);
+  	await client.createRichMenuAlias(aRichMenuId, 'switch-to-a');
   	console.log('エイリアス switch-to-a 作成');
   	
-  	await client.createRichMenuAlias('switch-to-b', bRichMenuId);
+  	await client.createRichMenuAlias(bRichMenuId, 'switch-to-b');
   	console.log('エイリアス switch-to-b 作成');
   	
   	
@@ -224,12 +235,3 @@ async function createRichMenus(aRichMenuId, bRichMenuId) {
     console.error('リッチメニュー作成エラー:', error);
   }
 };
-
-
-module.exports = {
-  handleRichMenu,
-  aCreateRichMenu,
-  bCreateRichMenu,
-  createRichMenus
-};
-

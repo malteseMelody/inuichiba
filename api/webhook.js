@@ -1,25 +1,37 @@
-require("dotenv").config();
-const { handleEvent } = require('./handlers/events');
+import 'dotenv/config.js'; // ← dotenvをESM風に書く方法（import形式で統一）
+import { middleware } from '@line/bot-sdk';
+import { handleEvent } from './handlers/events.js';
 
-function buffer(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on('data', (chunk) => chunks.push(chunk));
-    req.on('end', () => resolve(Buffer.concat(chunks).toString()));
-    req.on('error', reject);
-  });
-}
+// LINE botの設定
+const config = {
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.CHANNEL_SECRET,
+};
 
-module.exports = async (req, res) => {
-  const ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
+// ミドルウェアを準備
+const lineMiddleware = middleware(config);
+
+// Vercel用エクスポート関数（アロー関数なし）
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.status(405).send('Method Not Allowed');
+    return;
+  }
 
   try {
-    const bodyText = await buffer(req);
-    const body = JSON.parse(bodyText);
+    // ミドルウェアをPromiseで包む
+    await new Promise(function (resolve, reject) {
+      lineMiddleware(req, res, function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
 
-    console.log("🚨 受信データ:", JSON.stringify(body, null, 2));
+    const events = req.body.events;
 
-    const events = body.events;
     if (!events) {
       res.status(200).send('No events');
       return;
@@ -27,7 +39,7 @@ module.exports = async (req, res) => {
 
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
-      await handleEvent(event, ACCESS_TOKEN);
+      await handleEvent(event, process.env.CHANNEL_ACCESS_TOKEN);
     }
 
     res.status(200).send('OK');
@@ -35,4 +47,4 @@ module.exports = async (req, res) => {
     console.error('❌ Webhook Error:', error);
     res.status(500).send('Error');
   }
-};
+}

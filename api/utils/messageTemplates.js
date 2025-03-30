@@ -1,133 +1,119 @@
-const { sendReplyMessage } = require('../utils/lineApiHelpers');
-const eventsModule = require('../handlers/events');
-const messages = require('../../richmenu-manager/data/messages');
-
+import { sendReplyMessage } from '../utils/lineApiHelpers.js';
+import { textMessages, mediaMessages, textTemplates, emojiMap } from '../../richmenu-manager/data/messages.js';
+import * as messages from '../../richmenu-manager/data/messages.js';
 
 // ///////////////////////////////////////////// 
 // テキストメッセージの後にカルーセルメッセージを出力する
-// カルーセルメッセージ(flexメッセージが横に複数並んでいる)を表示
-// シミュレータ(Flex Message Simulator)上で一括で複数定義したものはflexMessage()を使って表示する
-// flexメッセージ、カルーセルメッセージの作り方(Flex Message Simulator)は次を参照
-// https://developers.line.biz/flex-simulator/
-// 動画も載せられるようになったけど誰もしてないことに何かを感じるのでしない
-
-async function setCarouselMessage(replyToken, ACCESS_TOKEN) {
-	console.log("🚨 setCarouselMessage() が呼び出されました！");
-
-  // テキストメッセージ（説明文）
+export async function setCarouselMessage(replyToken, ACCESS_TOKEN) {
   const textMessage = {
     type: "text",
     text: messages.msgA4
   };
 
-  // 各バブルの定義
-const flex_message1 = {
-  "type": "bubble",
-  "body": {
-    "type": "box",
-    "layout": "vertical",
-    "contents": [
-      {
-        "type": "image",
-        "url": "https://inuichiba.vercel.app/carousel/cPark1.jpg",
-        "size": "full",
-        "aspectRatio": "1:1",
-        "aspectMode": "fit",
-        "action": {
-          "type": "uri",
-          "uri": "https://inuichiba.vercel.app/carousel/cPark1detail.png"
+  const flex_message1 = {
+    type: "bubble",
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents: [
+        {
+          type: "image",
+          url: "https://inuichiba.vercel.app/carousel/cPark1.jpg",
+          size: "full",
+          aspectRatio: "1:1",
+          aspectMode: "fit",
+          action: {
+            type: "uri",
+            uri: "https://inuichiba.vercel.app/carousel/cPark1detail.png"
+          }
+        },
+        {
+          type: "text",
+          text: "駐車場全体地図",
+          align: "center",
+          weight: "bold",
+          size: "sm",
+          color: "#333333"
         }
-      },
-      {
-        "type": "text",
-        "text": "駐車場全体地図",
-        "align": "center",
-        "weight": "bold",
-        "size": "sm",
-        "color": "#333333"
+      ]
+    },
+    styles: {
+      body: {
+        backgroundColor: "#F3C2D5"
       }
-    ]
-  },
-  "styles": {
-    "body": {
-      "backgroundColor": "#F3C2D5"
     }
-  }
-};
+  };
 
-const flex_message2 = {
-  "type": "bubble",
-  "body": {
-    "type": "box",
-    "layout": "vertical",
-    "contents": [
-      {
-        "type": "image",
-        "url": "https://inuichiba.vercel.app/carousel/cPark2.png",
-        "size": "full",
-        "aspectRatio": "1:1",
-        "aspectMode": "fit",
-        "action": {
-          "type": "uri",
-          "uri": "https://inuichiba.vercel.app/carousel/cPark2detail.png"
+  const flex_message2 = {
+    type: "bubble",
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents: [
+        {
+          type: "image",
+          url: "https://inuichiba.vercel.app/carousel/cPark2.png",
+          size: "full",
+          aspectRatio: "1:1",
+          aspectMode: "fit",
+          action: {
+            type: "uri",
+            uri: "https://inuichiba.vercel.app/carousel/cPark2detail.png"
+          }
+        },
+        {
+          type: "text",
+          text: "駐車場全体地図",
+          align: "center",
+          weight: "bold",
+          size: "sm",
+          color: "#333333"
         }
-      },
-      {
-        "type": "text",
-        "text": "駐車場全体地図",
-        "align": "center",
-        "weight": "bold",
-        "size": "sm",
-        "color": "#333333"
+      ]
+    },
+    styles: {
+      body: {
+        backgroundColor: "#F3C2D5"
       }
-    ]
-  },
-  "styles": {
-    "body": {
-      "backgroundColor": "#F3C2D5"
     }
-  }
-};
+  };
 
-const flex_message3 = {
-  "type": "bubble",
-  "body": {
-    "type": "box",
-    "layout": "vertical",
-    "contents": [
-      {
-        "type": "image",
-        "url": "https://inuichiba.vercel.app/carousel/cPark3.png",
-        "size": "full",
-        "aspectRatio": "1:1",
-        "aspectMode": "fit",
-        "action": {
-          "type": "uri",
-          "uri": "https://inuichiba.vercel.app/carousel/cPark3detail.png"
+  const flex_message3 = {
+    type: "bubble",
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents: [
+        {
+          type: "image",
+          url: "https://inuichiba.vercel.app/carousel/cPark3.png",
+          size: "full",
+          aspectRatio: "1:1",
+          aspectMode: "fit",
+          action: {
+            type: "uri",
+            uri: "https://inuichiba.vercel.app/carousel/cPark3detail.png"
+          }
+        },
+        {
+          type: "text",
+          text: "駐車場全体地図",
+          align: "center",
+          weight: "bold",
+          size: "sm",
+          color: "#333333"
         }
-      },
-      {
-        "type": "text",
-        "text": "駐車場全体地図",
-        "align": "center",
-        "weight": "bold",
-        "size": "sm",
-        "color": "#333333"
+      ]
+    },
+    styles: {
+      body: {
+        backgroundColor: "#F3C2D5"
       }
-    ]
-  },
-  "styles": {
-    "body": {
-      "backgroundColor": "#F3C2D5"
     }
-  }
-};
+  };
 
-  // カルーセルの内容として、bubble の配列を設定
   const carouselContents = [flex_message1, flex_message2, flex_message3];
 
-  // Flex Message のカルーセルメッセージオブジェクト
-  // altTextはクライアントがFlex Messageに対応していない場合に表示されるテキスト(必須)
   const flexMessage = {
     type: "flex",
     altText: "こちらはカルーセルメッセージです", 
@@ -137,44 +123,26 @@ const flex_message3 = {
     }
   };
 	
-	console.log("📦 Flex Message 中身:", JSON.stringify(flexMessage, null, 2));
-	console.log("🚀 実際に送るメッセージ:", [textMessage, flexMessage]);
-　console.log("🧪 sendReplyMessage:", typeof sendReplyMessage);
-	
-  // 送信するメッセージは、テキストとFlex Messageを配列にしてまとめて送る
-	await sendReplyMessage(replyToken, [textMessage, flexMessage], ACCESS_TOKEN);
+  console.log("📦 Flex Message 中身:", JSON.stringify(flexMessage, null, 2));
+  console.log("🚀 実際に送るメッセージ:", [textMessage, flexMessage]);
 
+  await sendReplyMessage(replyToken, [textMessage, flexMessage], ACCESS_TOKEN);
 }
 
 // /////////////////////////////////////////
 // 絵文字入りメッセージを組み立てる
-// LINEの絵文字は以下の場所にあるよ(絵文字は現状max20個まで指定可能)
-// https://developers.line.biz/ja/docs/messaging-api/emoji-list/#line-emoji-definitions
-function buildEmojiMessage(templateKey, mBody) {
-	const { textTemplates, emojiMap } = require('../../richmenu-manager/data/messages');
-	
-  let   rawText   = textTemplates[templateKey];
+export function buildEmojiMessage(templateKey, mBody) {
+  let rawText = textTemplates[templateKey];
   const emojiList = emojiMap[templateKey];
-  
-  // followの挨拶の時、最初に「～さん、こんにちは」が入ることが
-  // あるため、templeteKeyの値からはずれるときがある
-  if (templateKey == "msgFollow") {
-		rawText = mBody;
-	}
-	
-	// 末尾に$があるとたまにLINEがご機嫌斜めになってエラー400を返す
-	// エラーを返し始めたら断固返すのでこの処理もやめる
-//	if (rawText.endsWith('$')) {
-//  	rawText += " "; 
-//	}
-	
-	if (!rawText) {
+
+  if (templateKey === "msgFollow") {
+    rawText = mBody;
+  }
+
+  if (!rawText) {
     throw new Error(`テキストテンプレートが見つかりません: ${templateKey}`);
   }
-	
-  // $の個数をカウント
-  // $がなかったらmatchはnullを返すのでlengthが誤動作するが
-  // "|| []"(または空の配列、の意味)を返すことでlengthは0を返してくれるようになる
+
   const placeholderCount = (rawText.match(/\$/g) || []).length;
   console.log("💡 placeholderCount ($の数):", placeholderCount);
   console.log("🔢 emojiList.length:", emojiList ? emojiList.length : 0);
@@ -182,63 +150,32 @@ function buildEmojiMessage(templateKey, mBody) {
   if (!emojiList || placeholderCount !== emojiList.length) {
     throw new Error(`$の数(${placeholderCount})とemojiListの数(${emojiList ? emojiList.length : 0})が一致しません: ${templateKey}`);
   }
-  
-  let emojis = [];
+
+  const emojis = [];
   let i = 0;
-  
-  // $を最初からサーチ(0オリジン)
   let placeholderIndex = rawText.indexOf('$');  
-  
-  // $がなくなるまで文字列をサーチする
-  while (placeholderIndex != -1) {
+
+  while (placeholderIndex !== -1) {
     emojis.push({
       index:     placeholderIndex,
       productId: emojiList[i].productId,
       emojiId:   emojiList[i].emojiId
     });
 
-    // 見つかった$の次の位置からサーチを再開する
-    // ちなみに改行\nも1文字、半角文字でも全角文字でも1文字とカウント
-    // (多少の例外はあるみたいだから気をつけてね)
     placeholderIndex = rawText.indexOf("$", placeholderIndex + 1);
     i++;
   }
-	
-	console.log("📦 最終構築される emojis 配列:", emojis);
-	console.log("✅ 最終返却メッセージ:", {
-  	type: "text",
-  	text: rawText,
-  	emojis: emojis
-	});
-	
-	console.log("📏 rawText.length:", rawText.length);
-	console.log("🧪 rawText文字別:", rawText.split('').map((ch, i) => `${i}:${ch}`).join(' | '));
-	
-  return { type: "text", text: rawText, emojis: emojis };
-	
-}
 
+  console.log("📦 最終構築される emojis 配列:", emojis);
+  console.log("✅ 最終返却メッセージ:", {
+    type: "text",
+    text: rawText,
+    emojis: emojis
+  });
 
-function createImageMessage(url) {
   return {
-    type: "image",
-    originalContentUrl: url,
-    previewImageUrl: url
+    type: "text",
+    text: rawText,
+    emojis: emojis
   };
 }
-
-
-function createVideoMessage(videoUrl, previewImageUrl) {
-  return {
-    type: "video",
-    originalContentUrl: videoUrl,
-    previewImageUrl: previewImageUrl
-  };
-}
-
-module.exports = {
-	setCarouselMessage,
-	buildEmojiMessage,
-  createImageMessage,
-  createVideoMessage
-};

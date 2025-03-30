@@ -1,21 +1,20 @@
 // 実行コマンド→　node richmenu-manager/resetRichMenu.js
 
-const deleteAllRichMenus = require("./deleteAllRichMenus");
-const { bCreateRichMenu } = require("./richMenuHandler");
+import 'dotenv/config.js';
+import { deleteRichMenusAndAliases } from './deleteAllRichMenus.js';
+import { handleRichMenu } from './richMenuHandler.js';
 
 const ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
 
-// async関数を定義（←これがメイン処理）
+// メイン処理
 async function main() {
   console.log("🔁 リッチメニュー初期化開始");
 
-  await deleteAllRichMenus();
+  await deleteRichMenusAndAliases();
   console.log("🗑️ 既存リッチメニュー削除完了");
 
-  await bCreateRichMenu(ACCESS_TOKEN);
+  await handleRichMenu(ACCESS_TOKEN);
   console.log("✅ リッチメニュー再作成完了");
 }
 
-// メイン関数を呼び出す
 main();
-
