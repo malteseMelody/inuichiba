@@ -1,9 +1,9 @@
 
 import express from 'express';
 import { middleware } from '@line/bot-sdk';
-import dotenv from 'dotenv';
 import { handleEvent } from './api/handlers/events.js'; 
 
+import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
