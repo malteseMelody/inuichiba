@@ -37,6 +37,8 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
   const groupId = event.source.groupId || null;
   const safeGroupId = groupId || "default";  // nullのときは"default"
   
+  console.log("🟡 follow イベント開始:", { userId, groupId });
+  
   const profile = await getUserProfile(userId, ACCESS_TOKEN);
   
   // プロフィールが取得できなかった場合はnull補完
@@ -44,9 +46,13 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
   const pictureUrl = profile?.pictureUrl || null;
   const statusMessage = profile?.statusMessage || null;
   
+  console.log("🟢 プロフィール取得:", { displayName, pictureUrl });
+  
   // 書き込み処理
-  await writeUserDataToSupabase(timestamp, groupId, userId, 
+  await writeUserDataToSupabase(groupId, userId, 
 								displayName, pictureUrl, statusMessage);
+								
+  console.log("✅ Supabase 書き込み完了");								
 
   const followText = textTemplates["msgFollow"];
 
