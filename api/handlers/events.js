@@ -156,7 +156,7 @@ async function setCarouselMessage(replyToken, ACCESS_TOKEN) {
       contents: [
         {
           type: "image",
-          url: "https://inuichiba.vercel.app/carousel/cPark1.jpg",
+          url: "https://inuichiba.vercel.app/carousel/cPark1.png",
           size: "full",
           aspectRatio: "1:1",
           aspectMode: "fit",

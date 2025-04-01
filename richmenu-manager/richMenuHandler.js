@@ -209,12 +209,12 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
 async function createRichMenus(aRichMenuId, bRichMenuId) {
   try {
   	// リッチメニュー用画像ファイルをアップロードして紐づける
-	const imageAPath = path.join(__dirname, '../public/images/tabA.png');		
+	const imageAPath = path.join(__dirname, '../public/images/tabA2025autumn.png');		
   	const imageAStream = fs.createReadStream(imageAPath);
   	await client.setRichMenuImage(aRichMenuId, imageAStream);
   	console.log('aRichMenu画像アップロード完了');
  	 	
-  	const imageBPath = path.join(__dirname, '../public/images/tabB.png');
+  	const imageBPath = path.join(__dirname, '../public/images/tabB2025autumn.png');
   	const imageBStream = fs.createReadStream(imageBPath);
   	await client.setRichMenuImage(bRichMenuId, imageBStream);
   	console.log('bRichMenu画像アップロード完了');
