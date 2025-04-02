@@ -2,7 +2,6 @@
 // 最初に以下のコマンドをターミナルのプロジェクトのルートディレクトリで実行
 // npm install @line/bot-sdk
 
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -74,7 +73,7 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
     const richmenuA = {
     	size: { width: wAll, height: hAll },
     	selected: true,
-    	name: "タブＡ(左側メニュー)タップ領域定義",
+    	name: "タブＡ(左側メニュー)2025秋",  // バージョン管理用。.envに書いてLINEのキャッシュを強制的に削除するときにも使う
     	chatBarText: "メニュー(表示/非表示)",
     	areas: [
       	// タブA(左側のタブ)がタップされたらタブA画面に遷移する
@@ -87,12 +86,12 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
           bounds: { x: wTab, y: 0, width: wTab, height: hTab },
           action: { type: "richmenuswitch", richMenuAliasId: "switch-to-b", data: "change to B" }
         },
-      	// A1 EVENT
+      	// A1
         {
           bounds: { x: 0, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA1" }
         },
-	    // A2 LET'S ENJOY CONTENTS
+	    // A2
         {
           bounds: { x: wItem, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA2" }
@@ -103,20 +102,25 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
           action: { type: "uri", uri: "https://inuichiba.com/index.html" }
         },
 	      
-  	    // A3 MAP
+  	    // A3
         {
           bounds: { x: 0, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA3" }
         },
-	    // A4 PARKING
+	    // A4
         {
           bounds: { x: wItem, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA4" }
         },
-	    // A5 GOOD MANNERS
+	    // A5
         {
-          bounds: { x:wItem*2, y: (hTab+hItem), width: wItem*2, height: hItem },
+          bounds: { x: wItem*2, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuA5" }
+        },
+	    // A6
+        {
+          bounds: { x:wItem*3, y: (hTab+hItem), width: wItem, height: hItem },
+          action: { type: "postback", data: "tap_richMenuA6" }
         }
     	]
 	};
@@ -141,7 +145,7 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
     const richmenuB = {
     	size: { width: wAll, height: hAll },
     	selected: true,
-    	name: "タブＢ(右側メニュー)タップ領域定義",
+    	name: "タブＢ(右側メニュー)2025秋",
     	chatBarText: "メニュー(表示/非表示)",
     	areas: [
       	// タブA(左側のタブ)がタップされたらタブA画面に遷移する
@@ -154,12 +158,12 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
           bounds: { x: wTab, y: 0, width: wTab, height: hTab },
           action: { type: "richmenuswitch", richMenuAliasId: "switch-to-b", data: "change to B" }
         },
-        // B1 EVENT
+        // B1
         {
           bounds: { x: 0, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB1" }
         },
-        // B2 LET'S ENJOY CONTENTS
+        // B2
         {
           bounds: { x: wItem, y: hTab, width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB2" }
@@ -170,20 +174,25 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
           action: { type: "uri", uri: "https://inuichiba.com/index.html" }
         },
 	      
-  	    // B3 MAP
+  	    // B3
         {
           bounds: { x: 0, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB3" }
         },
-	    // B4 PARKING
+	    // B4
         {
           bounds: { x: wItem, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB4" }
         },
-	    // B5 GOOD MANNERS
+	    // B5
         {
-          bounds: { x:wItem*2, y:(hTab+hItem), width: wItem*2, height: hItem },
+          bounds: { x: wItem*2, y: (hTab+hItem), width: wItem, height: hItem },
           action: { type: "postback", data: "tap_richMenuB5" }
+        },
+	    // B6
+        {
+          bounds: { x:wItem*3, y:(hTab+hItem), width: wItem, height: hItem },
+          action: { type: "postback", data: "tap_richMenuB6" }
         }
     	]
 		};
@@ -220,18 +229,20 @@ async function createRichMenus(aRichMenuId, bRichMenuId) {
   	console.log('bRichMenu画像アップロード完了');
   	
   	// デフォルトメニューをAにする
-  	await client.setDefaultRichMenu(aRichMenuId);
-  	console.log('aRichMenuをデフォルトに設定');
-  	
-  	// エイリアスを定義する
+  try {
+	await client.setDefaultRichMenu(aRichMenuId);
+	console.log("aRichMenuをデフォルトに設定");
+	
+	// エイリアスを定義する
   	await client.createRichMenuAlias(aRichMenuId, 'switch-to-a');
   	console.log('エイリアス switch-to-a 作成');
   	
   	await client.createRichMenuAlias(bRichMenuId, 'switch-to-b');
   	console.log('エイリアス switch-to-b 作成');
-  	
-  	
+  	 	
   } catch (error) {
     console.error('リッチメニュー作成エラー:', error);
   }
-};
+  
+}; 
+

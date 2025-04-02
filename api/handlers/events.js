@@ -45,15 +45,14 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
   const displayName = profile?.displayName || null;
   const pictureUrl = profile?.pictureUrl || null;
   const statusMessage = profile?.statusMessage || null;
-  
-  console.log("🟢 プロフィール取得:", { displayName, pictureUrl });
+  const shopName = null;
   
   // 書き込み処理
-  await writeUserDataToSupabase(groupId, userId, 
-								displayName, pictureUrl, statusMessage);
-								
+　await writeUserDataToSupabase(groupId, userId, displayName, 
+   							　  pictureUrl, statusMessage, shopName);								
   console.log("✅ Supabase 書き込み完了");								
 
+  // フォローありがとうメッセージを作る
   const followText = textTemplates["msgFollow"];
 
   if (displayName == null || displayName.includes("$")) {
@@ -72,6 +71,7 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 
   await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
 }
+
 
 // ///////////////////////////////////////////
 // messageイベントの処理
@@ -111,10 +111,8 @@ async function handleRichMenuTap(data, replyToken, ACCESS_TOKEN) {
   if (mediaMessages[data]) {
     messages = mediaMessages[data];
   } else if (textMessages[data]) {
-    messages.push({ type: "text", text: textMessages[data] });
-    console.log("送信予定テキスト: ", textMessages[data]);
-  } else if (data == "tap_richMenuA4") {
-    console.log("🎯 tap_richMenuA4 マッチしました");
+    messages = textMessages[data];
+  } else if (data == "tap_richMenuA5") {
     await setCarouselMessage(replyToken, ACCESS_TOKEN);
     return;
   }
@@ -145,7 +143,7 @@ async function handleRichMenuTap(data, replyToken, ACCESS_TOKEN) {
 async function setCarouselMessage(replyToken, ACCESS_TOKEN) {
   const textMessage = {
     type: "text",
-    text: messages.msgA4
+    text: messages.msgA5
   };
 
   const flex_message1 = {
@@ -266,6 +264,7 @@ async function setCarouselMessage(replyToken, ACCESS_TOKEN) {
 
   await sendReplyMessage(replyToken, [textMessage, flexMessage], ACCESS_TOKEN);
 }
+
 
 // /////////////////////////////////////////
 // 絵文字入りメッセージを組み立てる
