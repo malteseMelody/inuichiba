@@ -229,11 +229,10 @@ async function createRichMenus(aRichMenuId, bRichMenuId) {
   	console.log('bRichMenu画像アップロード完了');
   	
   	// デフォルトメニューをAにする
-  try {
-	await client.setDefaultRichMenu(aRichMenuId);
-	console.log("aRichMenuをデフォルトに設定");
+		await client.setDefaultRichMenu(aRichMenuId);
+		console.log("aRichMenuをデフォルトに設定");
 	
-	// エイリアスを定義する
+		// エイリアスを定義する
   	await client.createRichMenuAlias(aRichMenuId, 'switch-to-a');
   	console.log('エイリアス switch-to-a 作成');
   	
