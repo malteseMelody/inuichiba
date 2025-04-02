@@ -63,7 +63,7 @@ export async function handleRichMenu(ACCESS_TOKEN) {
     	console.error('リッチメニューメインエラー:', error);
   }  
   	
-};
+}
 
 
 // ///////////////////////////////////////
@@ -135,7 +135,7 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
     	console.error('aRichMenuId作成エラー:', error);
   }  
   
-};
+}
 
 
 // //////////////////////////////////////////////////
@@ -207,7 +207,7 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
     	console.error('bRichMenuId作成エラー:', error);
   }  
   
-};
+}
 
 
 // // //////////////////////////////////////////////
@@ -218,7 +218,7 @@ async function bCreateRichMenu(ACCESS_TOKEN) {
 async function createRichMenus(aRichMenuId, bRichMenuId) {
   try {
   	// リッチメニュー用画像ファイルをアップロードして紐づける
-	const imageAPath = path.join(__dirname, '../public/images/tabA2025autumn.png');		
+		const imageAPath = path.join(__dirname, '../public/images/tabA2025autumn.png');		
   	const imageAStream = fs.createReadStream(imageAPath);
   	await client.setRichMenuImage(aRichMenuId, imageAStream);
   	console.log('aRichMenu画像アップロード完了');
@@ -242,6 +242,5 @@ async function createRichMenus(aRichMenuId, bRichMenuId) {
   } catch (error) {
     console.error('リッチメニュー作成エラー:', error);
   }
-  
-}; 
+} 
 
