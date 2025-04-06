@@ -1,17 +1,21 @@
-// 開発時のみ実行　node richmenu-manager/testRichMenuLink.js
+// 開発時のみ実行 node richmenu-manager/testRichMenuLink.js
+// テストで個人ユーザーにだけリッチメニューをリンクしたいときに、
+// LINEのユーザーIDとメニュー名を .env.xx..xx にセットしておいて手動実行したいとき使う
+// 今は使ってないのでlinkエラーが出ないようにコメントアウトしてるの
+/*
 
 // richmenu-manager/testRichMenuLink.js
 
-import 'dotenv/config.js';
+import dotenv from 'dotenv';
+dotenv.config();
 import line from '@line/bot-sdk';
+import { channelAccessToken, channelSecret, myLineUserId, targetMenuName } from "../lib/env.js";
 
 const client = new line.Client({
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-  channelSecret: process.env.CHANNEL_SECRET,
+  channelAccessToken,
+  channelSecret,
 });
 
-const userId = process.env.MY_LINE_USER_ID;
-const menuName = process.env.TARGET_MENU_NAME;
 
 // richMenu名からrichMenuIdを取得する関数
 async function getRichMenuIdByName(targetName) {
@@ -32,14 +36,15 @@ async function getRichMenuIdByName(targetName) {
 
 async function linkRichMenuByName() {
   try {
-    const richMenuId = await getRichMenuIdByName(menuName);
+    const richMenuId = await getRichMenuIdByName(targetMenuName);
 
-    await client.unlinkRichMenuFromUser(userId);
+    await client.unlinkRichMenuFromUser(myLineUserId);
     console.log('✅ unlink 成功');
 
-    await client.linkRichMenuToUser(userId, richMenuId);
-    console.log(`✅ リッチメニュー「${menuName}」をリンクしました`);
+    await client.linkRichMenuToUser(myLineUserId, richMenuId);
+    console.log(`✅ リッチメニュー「${targetMenuName}」をリンクしました`);
   } catch (err) {
     console.error('❌ エラー:', err.originalError?.response?.data || err);
   }
 }
+*/

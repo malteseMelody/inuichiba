@@ -1,28 +1,34 @@
-import 'dotenv/config.js'; // ← dotenvをESM風に書く方法（import形式で統一）
-import { middleware } from '@line/bot-sdk';
-import { handleEvent } from './handlers/events.js';
+// api/webhook.js
 
-// LINE botの設定
-const config = {
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-  channelSecret: process.env.CHANNEL_SECRET,
+import { middleware } from '@line/bot-sdk';
+import { handleEvent } from './handlers/events.js'; // ← 実際に返信処理をしている関数
+import { channelAccessToken, channelSecret, envName } from '../lib/env.js';
+
+const lineConfig = {
+  channelAccessToken,
+  channelSecret,
 };
 
-// ミドルウェアを準備
-const lineMiddleware = middleware(config);
+const lineMiddleware = middleware(lineConfig);
 
-// Vercel用エクスポート関数（アロー関数なし）
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).send('Method Not Allowed');
-    return;
-  }
+	console.log("✅ Webhook関数に到達！");
+	console.log("🔍 環境:", envName);
+	console.log("🔍 channelSecret:", channelSecret ? "✅ 定義あり" : "❌ undefined");
+	console.log("🔍 channelAccessToken:", channelAccessToken ? "✅ 定義あり" : "❌ undefined");
 
   try {
-    // ミドルウェアをPromiseで包む
-    await new Promise(function (resolve, reject) {
-      lineMiddleware(req, res, function (err) {
+    await new Promise((resolve, reject) => {
+      lineMiddleware(req, res, (err) => {
         if (err) {
+          console.error("❌ Middleware署名エラー:", err.message);
+          res.status(401).send("Unauthorized");
           reject(err);
         } else {
           resolve();
@@ -31,20 +37,21 @@ export default async function handler(req, res) {
     });
 
     const events = req.body.events;
-
-    if (!events) {
-      res.status(200).send('No events');
+    if (!events || !Array.isArray(events)) {
+      res.status(200).send("No events");
       return;
     }
 
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i];
-      await handleEvent(event, process.env.CHANNEL_ACCESS_TOKEN);
+    console.log("✅ イベント受信:", events.length, "件");
+
+    for (const event of events) {
+      await handleEvent(event, channelAccessToken);
     }
 
-    res.status(200).send('OK');
+    res.status(200).send("OK from handler");
+
   } catch (error) {
-    console.error('❌ Webhook Error:', error);
-    res.status(500).send('Error');
+    console.error("💥 Webhookクラッシュ:", error);
+    res.status(500).send("Error in webhook");
   }
 }

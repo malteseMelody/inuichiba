@@ -20,9 +20,10 @@ const menus = await client.getRichMenuList();
 */
 
 import { Client } from '@line/bot-sdk';
+import { channelAccessToken } from "../lib/env.js";
 
 const client = new Client({
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
+  channelAccessToken
 });
 
 export async function deleteRichMenusAndAliases() {
@@ -55,11 +56,11 @@ export async function deleteRichMenusAndAliases() {
         await client.deleteRichMenuAlias(aliasId);
         console.log(`❌ エイリアス '${aliasId}' を削除しました`);
       } catch (e) {
-		if (e.statusCode !== 404) {
-			throw e; // ← 404 以外は本当のエラーだから投げる
-		} else {
-			console.warn("⚠ switch-to-a/switch-to-b は存在しなかったのでスキップしました");
-		}
+				if (e.statusCode !== 404) {
+					throw e; // ← 404 以外は本当のエラーだから投げる
+				} else {
+					console.warn("⚠ switch-to-a/switch-to-b は存在しなかったのでスキップしました");
+				}
       }
     }
 

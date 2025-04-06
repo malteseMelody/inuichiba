@@ -1,13 +1,14 @@
 # node_modules は不要
 node_modules/
 
-# Vercelのメタ情報もいらない
+# Vercelの設定ファイル
 .vercel/
 
 # OS・エディタごとの不要ファイル
 .DS_Store
 Thumbs.db
 
-# 環境ファイル  
+# 環境変数ファイル（絶対Gitに入れない！）
 .env
+.env.*
 .vercel

@@ -1,5 +1,5 @@
 import { handleRichMenu } from '../../richmenu-manager/richMenuHandler.js';
-import { writeUserDataToSupabase } from "../../lib/writeUserDataToSupabase.js";
+import { saveUserProfileAndWrite } from "../../lib/saveUserInfo.js";
 import { sendReplyMessage, getUserProfile } from '../../lib/lineApiHelpers.js';
 import { textMessages, mediaMessages, textTemplates, emojiMap } from '../../richmenu-manager/data/messages.js';
 import axios from 'axios';
@@ -13,54 +13,59 @@ export async function handleEvent(event, ACCESS_TOKEN) {
     case 'message':
       await handleMessageEvent(event, ACCESS_TOKEN);
       break;
+
     case 'postback':
       await handlePostbackEvent(event, ACCESS_TOKEN);
       break;
+
     case 'follow':
       await handleFollowEvent(event, ACCESS_TOKEN);
       break;
+
     case 'unfollow':
-      console.log("🔕 ユーザーがブロックしました:", event.source.userId);
+      console.log("🔕 ブロックされました:", event.source?.userId);
       break;
+
+    case 'join':
+      await handleJoinEvent(event, ACCESS_TOKEN);
+      break;
+
+    case 'leave':
+      console.log("🚪 グループから削除されました:", event.source?.groupId || event.source?.roomId);
+      break;
+
+    case 'memberJoined':
+      console.log("👧 誰かがグループに参加しました:", event.source?.groupId || event.source?.roomId);
+      break;
+
+    case 'memberLeft':
+      console.log("👋 誰かがグループを退出しました:", event.source?.groupId || event.source?.roomId);
+      break;
+
     default:
-      console.log('❓ Unhandled event type:', event.type);
+      console.log("❓ 未処理イベントタイプ:", event.type);
   }
 }
 
+
 // ///////////////////////////////////////////
-// followイベントの処理
+// followイベントの処理（書き込みはあとから実行）
 async function handleFollowEvent(event, ACCESS_TOKEN) {
-  let mBody;
-  let message = [];
+  const userId = event.source?.userId;
+  const groupId = event.source?.groupId || null;
 
-  const userId = event.source.userId;
-  const groupId = event.source.groupId || null;
-  const safeGroupId = groupId || "default";  // nullのときは"default"
-  
   console.log("🟡 follow イベント開始:", { userId, groupId });
-  
-  const profile = await getUserProfile(userId, ACCESS_TOKEN);
-  
-  // プロフィールが取得できなかった場合はnull補完
-  const displayName = profile?.displayName || null;
-  const pictureUrl = profile?.pictureUrl || null;
-  const statusMessage = profile?.statusMessage || null;
-  const shopName = null;
-  
-  // 書き込み処理
-　await writeUserDataToSupabase(groupId, userId, displayName, 
-   							　  pictureUrl, statusMessage, shopName);								
-  console.log("✅ Supabase 書き込み完了");								
 
-  // フォローありがとうメッセージを作る
+  // --- メッセージ生成＆返信
+  const profile = await getUserProfile(userId, ACCESS_TOKEN);
+  const displayName = profile?.displayName || null;
   const followText = textTemplates["msgFollow"];
 
-  if (displayName == null || displayName.includes("$")) {
-    mBody = followText;
-  } else {
-    mBody = `${displayName}さん、${followText}`;
-  }
+  let mBody = (displayName == null || displayName.includes("$"))
+    ? followText
+    : `${displayName}さん、${followText}`;
 
+  let message;
   try {
     const emojiTextMessage = buildEmojiMessage("msgFollow", mBody);
     message = emojiTextMessage;
@@ -70,36 +75,79 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
   }
 
   await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
+
+  // --- 書き込みはあとで非同期に（UI優先！）
+  if (userId) {
+    setTimeout(function () {
+      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
+        .then(() => {
+          console.log("✅ Supabase 書き込み完了 (follow)");
+        })
+        .catch(function (err) {
+          console.warn("⚠️ follow 書き込み失敗:", err.message);
+        });
+    }, 0);
+  }
 }
 
 
 // ///////////////////////////////////////////
-// messageイベントの処理
+// messageイベントの処理（書き込みは後ろで非同期）
 async function handleMessageEvent(event, ACCESS_TOKEN) {
-  let message = [];
+  const userId = event.source?.userId;
+  const groupId = event.source?.groupId;
   const data = event.message.text;
 
-  if (data == "ワイワイ") {
+  let message = [];
+
+  if (data === "ワイワイ") {
     message = { type: "text", text: messages.msgY };
   } else {
     message = { type: "text", text: messages.msgPostpone };
   }
 
   await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
+
+  // --- Supabase書き込みはメッセージ送信後、後回しに実行（非同期）
+  if (userId) {
+    setTimeout(function () {
+      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
+        .catch(function (err) {
+          console.log("⚠️ message書き込み失敗:", err.message);
+        });
+    }, 0);
+  }
 }
+
 
 // ///////////////////////////////////////////
-// postbackイベント：リッチメニューのタップ処理へ委譲
+// postbackイベント：リッチメニューのタップ処理へ委譲 + 書き込みは後回しで
 async function handlePostbackEvent(event, ACCESS_TOKEN) {
-  if (event.postback.data.startsWith("tap_richMenu")) {
-    await handleRichMenuTap(event.postback.data, event.replyToken, ACCESS_TOKEN);
+  const userId = event.source?.userId;
+  const groupId = event.source?.groupId;
+  const data = event.postback.data;
+
+  // --- A. メニュータップ系（返信処理）
+  if (data.startsWith("tap_richMenu")) {
+    await handleRichMenuTap(data, event.replyToken, ACCESS_TOKEN);
+  }
+
+  // --- B. タブ切り替えなど、今は何もしないケース
+  if (data === "change to A" || data === "change to B") {
     return;
   }
 
-  if (event.postback.data == "change to A" || event.postback.data == "change to B") {
-    return;
+  // --- C. 書き込みは後回しで実行（レスポンスに影響させない）
+  if (userId) {
+    setTimeout(function () {
+      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
+        .catch(function (err) {
+          console.log("⚠️ postback書き込み失敗:", err.message);
+        });
+    }, 0);
   }
 }
+
 
 // ///////////////////////////////////////////
 // リッチメニュータップのバッチ処理
@@ -123,11 +171,11 @@ async function handleRichMenuTap(data, replyToken, ACCESS_TOKEN) {
       messages.push(emojiTextMessage);
     }
   } catch (error) {
-    console.warn(`⚠️ Poskback絵文字メッセージの構築失敗: ${error.message}`);
+    console.warn(`⚠️ Postback絵文字メッセージの構築失敗: ${error.message}`);
   }
 
   if (messages.length === 0) {
-    console.warn(`⚠️ Poskbackで情報が見つかりませんでした: ${data.toString()}`);
+    console.warn(`⚠️ Postbackで情報が見つかりませんでした: ${data.toString()}`);
   }
 
   if (messages.length > 0) {
@@ -315,5 +363,20 @@ function buildEmojiMessage(templateKey, mBody) {
     text: rawText,
     emojis: emojis
   };
+}
+
+
+// ///////////////////////////////////////////
+// joinイベント（グループやルームに招待されたときの挨拶）
+async function handleJoinEvent(event, ACCESS_TOKEN) {
+  const groupId = event.source?.groupId || event.source?.roomId || "不明";
+  console.log("👋 joinイベント発生！グループまたはルームID:", groupId);
+
+  const welcomeMessage = {
+    type: "text",
+    text: "こんにちは！犬市場Botです🐶\nどうぞよろしくお願いします！"
+  };
+
+  await sendReplyMessage(event.replyToken, [welcomeMessage], ACCESS_TOKEN);
 }
 

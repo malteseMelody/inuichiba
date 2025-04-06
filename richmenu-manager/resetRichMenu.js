@@ -1,10 +1,9 @@
-// 実行コマンド→　node richmenu-manager/resetRichMenu.js
+// 実行コマンド→ node richmenu-manager/resetRichMenu.js
 
 import 'dotenv/config.js';
 import { deleteRichMenusAndAliases } from './deleteAllRichMenus.js';
 import { handleRichMenu } from './richMenuHandler.js';
-
-const ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
+import { channelAccessToken } from "../lib/env.js";
 
 // メイン処理
 async function main() {
@@ -13,7 +12,7 @@ async function main() {
   await deleteRichMenusAndAliases();
   console.log("🗑️ 既存リッチメニュー削除完了");
 
-  await handleRichMenu(ACCESS_TOKEN);
+  await handleRichMenu(channelAccessToken);
   console.log("✅ リッチメニュー再作成完了");
 }
 

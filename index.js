@@ -2,13 +2,14 @@
 import express from 'express';
 import { middleware } from '@line/bot-sdk';
 import { handleEvent } from './api/handlers/events.js'; 
+import { channelAccessToken } from "./lib/env.js";
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-  channelSecret: process.env.CHANNEL_SECRET,
+  channelAccessToken,
+  channelSecret,
 };
 
 const app = express();
@@ -21,7 +22,7 @@ app.post('/webhook', middleware(config), async function (req, res) {
   }
 
   for (let i = 0; i < events.length; i++) {
-    await handleEvent(events[i], process.env.CHANNEL_ACCESS_TOKEN);
+    await handleEvent(events[i], channelAccessToken);
   }
 
   res.status(200).send('OK');
