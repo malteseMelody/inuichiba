@@ -14,3 +14,5 @@ Thumbs.db
 .vercel
 
 .vercel
+.vercel/output/
+.vercel/output/
