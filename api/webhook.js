@@ -24,6 +24,7 @@ export const config = {
 export default async function handler(req, res) {
   console.log("✅ Webhook関数に到達！");
   console.log("🔍 環境:", envName);
+	console.log("📩 x-line-signature:", req.headers["x-line-signature"]);
 
   try {
     await new Promise((resolve, reject) => {
