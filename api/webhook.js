@@ -9,7 +9,6 @@ import {
 } from "../lib/env.js";
 
 console.log("📬 req.method:", req.method);
-console.log("📩 x-line-signature:", req.headers["x-line-signature"]);
 console.log("📬 req.headers 全体:", req.headers);
 
 const lineConfig = {
@@ -29,10 +28,13 @@ export const config = {
 export default async function handler(req, res) {
   console.log("✅ Webhook関数に到達！");
   console.log("🔍 環境:", envName);
-
+  console.log("🔍 リクエスト URL:", req.url);
+  console.log("🔍 メソッド:", req.method);
+	
   try {
     await new Promise((resolve, reject) => {
       lineMiddleware(req, res, (err) => {
+				 console.log("📩 x-line-signature:", req.headers["x-line-signature"]);
         if (err) {
           console.error("❌ Middleware署名エラー:", err.message);
           res.status(401).send("Unauthorized");
