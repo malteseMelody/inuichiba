@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "node index.js",
-    "vercel-build": "echo 'No build needed for serverless'"
   },
   "type": "module",
   "dependencies": {
