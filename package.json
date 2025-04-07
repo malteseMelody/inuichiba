@@ -1,9 +1,6 @@
 {
   "name": "inuichiba",
   "version": "1.0.0",
-  "scripts": {
-    "dev": "node index.js",
-  },
   "type": "module",
   "dependencies": {
     "@line/bot-sdk": "^9.7.1",
