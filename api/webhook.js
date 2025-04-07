@@ -18,7 +18,8 @@ export const config = {
 
 export default async function handler(req, res) {
   console.log("📩 webhook handler triggered:", req.method);
-  console.log("📩 x-line-signature:", req.headers['x-line-signature']);
+	console.log("📩 x-line-signature:", req.headers?.["x-line-signature"] ?? "undefined");
+
 
   if (req.method !== "POST") {
     return res.status(200).send("OK (not POST)");
