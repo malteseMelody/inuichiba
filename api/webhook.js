@@ -1,7 +1,7 @@
 // api/webhook.js
 import { middleware } from '@line/bot-sdk';
 import { channelAccessToken, channelSecret } from '../lib/env.js';
-import { handleEvent } from './handlers/events.js';
+import { handleEvent } from '../handlers/events.js'; // ←ここ修正！
 
 const lineConfig = {
   channelAccessToken,
@@ -18,6 +18,7 @@ export const config = {
 
 export default async function handler(req, res) {
   console.log("📩 webhook handler triggered:", req.method);
+  console.log("📩 x-line-signature:", req.headers['x-line-signature']);
 
   if (req.method !== "POST") {
     return res.status(200).send("OK (not POST)");
@@ -27,8 +28,6 @@ export default async function handler(req, res) {
     await new Promise((resolve, reject) => {
       lineMiddleware(req, res, (err) => {
         if (err) {
-					console.log("✅ webhook base handler reached!");
-					console.log("📩 webhook handler triggered:", req.method);
           console.error("❌ Middleware error:", err.message);
           res.status(401).send("Unauthorized");
           return reject(err);
