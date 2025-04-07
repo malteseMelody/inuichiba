@@ -5,9 +5,6 @@ Thumbs.db
 # node_modules は不要
 node_modules/
 
-# ローカルの Vercel 設定（※ project.json は commit してOK）
-.vercel/project.json
-
 # 環境変数ファイル（絶対Gitに入れない！）
 .env.dev
 .env.production
