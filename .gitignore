@@ -9,7 +9,6 @@ node_modules/
 Thumbs.db
 
 # 環境変数ファイル（絶対Gitに入れない！）
-.env
-.env.*
-.vercel
+.env.dev
+.env.production
 .vercel/output/
