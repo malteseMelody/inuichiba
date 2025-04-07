@@ -1,13 +1,12 @@
 // api/webhook.js
 import { middleware } from '@line/bot-sdk';
 import { channelAccessToken, channelSecret } from '../lib/env.js';
-import { handleEvent } from '../handlers/events.js'; // ←ここ修正！
+import { handleEvent } from './handlers/events.js';
 
 const lineConfig = {
   channelAccessToken,
   channelSecret,
 };
-
 const lineMiddleware = middleware(lineConfig);
 
 export const config = {
@@ -18,10 +17,9 @@ export const config = {
 
 export default async function handler(req, res) {
   console.log("📩 webhook handler triggered:", req.method);
-	console.log("📩 x-line-signature:", req.headers?.["x-line-signature"] ?? "undefined");
-
 
   if (req.method !== "POST") {
+    console.log("🚫 Not a POST request, skipping...");
     return res.status(200).send("OK (not POST)");
   }
 
@@ -37,7 +35,7 @@ export default async function handler(req, res) {
       });
     });
 
-    const events = req.body.events;
+    const events = req.body?.events;
     if (!events || !Array.isArray(events)) {
       return res.status(200).send("No events");
     }
