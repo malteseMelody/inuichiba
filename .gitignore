@@ -2,7 +2,7 @@
 node_modules/
 
 # Vercel出力（重要: .vercel/ 全体は除外しない！）
-.vercel/output/
+# .vercel/output/
 
 # OS・エディタごとの不要ファイル
 .DS_Store
