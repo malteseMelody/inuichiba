@@ -3,7 +3,7 @@ node_modules/
 
 # Vercel古いキャッシュビルドが残る原因になることがあるので無視してOK
 # （重要: .vercel/ 全体は除外しない！）
-.vercel/output/
+# .vercel/output/
 
 # OS・エディタごとの不要ファイル
 .DS_Store
