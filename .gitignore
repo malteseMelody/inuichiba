@@ -12,7 +12,5 @@ Thumbs.db
 .env
 .env.*
 .vercel
-
-.vercel
 .vercel/output/
-.vercel/output/
+.vercel/output
