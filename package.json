@@ -4,7 +4,7 @@
   "type": "module",
 	"scripts": {
   "build": "echo \"✅ No custom build needed\""
-	}
+	},
   "dependencies": {
     "@line/bot-sdk": "^9.7.1",
     "@supabase/supabase-js": "^2.49.4",
