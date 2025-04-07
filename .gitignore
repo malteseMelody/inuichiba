@@ -1,8 +1,8 @@
 # node_modules は不要
 node_modules/
 
-# Vercelの設定ファイル
-.vercel/
+# Vercel出力（重要: .vercel/ 全体は除外しない！）
+.vercel/output/
 
 # OS・エディタごとの不要ファイル
 .DS_Store
@@ -11,4 +11,3 @@ Thumbs.db
 # 環境変数ファイル（絶対Gitに入れない！）
 .env.dev
 .env.production
-.vercel/output/
