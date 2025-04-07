@@ -24,6 +24,10 @@ export default async function handler(req, res) {
     return res.status(200).send("OK (not POST)");
   }
 
+	const signature = req.headers["x-line-signature"];
+  console.log("📩 x-line-signature:", signature);
+  console.log("🔑 channelSecret used in middleware:", channelSecret);
+
   try {
     await new Promise((resolve, reject) => {
       lineMiddleware(req, res, (err) => {
