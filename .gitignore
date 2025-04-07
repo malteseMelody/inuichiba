@@ -12,4 +12,5 @@ Thumbs.db
 .env.dev
 .env.production
 
+
 # .vercel/
