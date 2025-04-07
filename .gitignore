@@ -1,17 +1,14 @@
+# OSやエディタによるゴミファイル
+.DS_Store
+Thumbs.db
+
 # node_modules は不要
 node_modules/
 
-# Vercel古いキャッシュビルドが残る原因になることがあるので無視してOK
-# （重要: .vercel/ 全体は除外しない！）
-# .vercel/output/
-
-# OS・エディタごとの不要ファイル
-.DS_Store
-Thumbs.db
+# ローカルの Vercel 設定（※ project.json は commit してOK）
+.vercel/project.json
 
 # 環境変数ファイル（絶対Gitに入れない！）
 .env.dev
 .env.production
 
-
-# .vercel/
