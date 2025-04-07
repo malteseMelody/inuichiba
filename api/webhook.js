@@ -3,11 +3,7 @@ import { middleware } from '@line/bot-sdk';
 import { channelAccessToken, channelSecret } from '../lib/env.js';
 import { handleEvent } from './handlers/events.js';
 
-const lineConfig = {
-  channelAccessToken,
-  channelSecret,
-};
-const lineMiddleware = middleware(lineConfig);
+console.log("🔑 channelSecret used in middleware:", channelSecret);
 
 export const config = {
   api: {
@@ -17,6 +13,11 @@ export const config = {
 
 export default async function handler(req, res) {
   console.log("📩 webhook handler triggered:", req.method);
+	
+	const lineMiddleware = middleware({
+    channelAccessToken,
+    channelSecret,
+  });
 
   if (req.method !== "POST") {
     console.log("🚫 Not a POST request, skipping...");
