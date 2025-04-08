@@ -1,21 +1,12 @@
 // api/webhook.js
-
-import { middleware } from "@line/bot-sdk";
-import { handleEvent } from "./handlers/events.js";
-import {
-  channelAccessToken,
-  channelSecret,
-  envName
-} from "../lib/env.js";
-
-console.log("📬 req.method:", req.method);
-console.log("📬 req.headers 全体:", req.headers);
+import { middleware } from '@line/bot-sdk';
+import { channelAccessToken, channelSecret } from '../lib/env.js';
+import { handleEvent } from './handlers/events.js';
 
 const lineConfig = {
   channelAccessToken,
   channelSecret,
 };
-
 const lineMiddleware = middleware(lineConfig);
 
 export const config = {
@@ -24,43 +15,38 @@ export const config = {
   },
 };
 
-
 export default async function handler(req, res) {
-  console.log("✅ Webhook関数に到達！");
-  console.log("🔍 環境:", envName);
-  console.log("🔍 リクエスト URL:", req.url);
-  console.log("🔍 メソッド:", req.method);
-	
+  console.log("📩 webhook handler triggered:", req.method);
+
+  if (req.method !== "POST") {
+    console.log("🚫 Not a POST request, skipping...");
+    return res.status(200).send("OK (not POST)");
+  }
+
   try {
     await new Promise((resolve, reject) => {
       lineMiddleware(req, res, (err) => {
-				 console.log("📩 x-line-signature:", req.headers["x-line-signature"]);
         if (err) {
-          console.error("❌ Middleware署名エラー:", err.message);
+          console.error("❌ Middleware error:", err.message);
           res.status(401).send("Unauthorized");
-          reject(err);
-        } else {
-          resolve();
+          return reject(err);
         }
+        resolve();
       });
     });
 
-    const events = req.body.events;
+    const events = req.body?.events;
     if (!events || !Array.isArray(events)) {
-      res.status(200).send("No events");
-      return;
+      return res.status(200).send("No events");
     }
-
-    console.log("✅ イベント受信:", events.length, "件");
 
     for (const event of events) {
-      await handleEvent(event, channelAccessToken);
+      await handleEvent(event);
     }
 
-    res.status(200).send("OK from handler");
-
-  } catch (error) {
-    console.error("💥 Webhookクラッシュ:", error);
-    res.status(500).send("Error in webhook");
+    res.status(200).send("OK from webhook");
+  } catch (err) {
+    console.error("💥 Error in webhook handler:", err);
+    res.status(500).send("Internal Server Error");
   }
 }
