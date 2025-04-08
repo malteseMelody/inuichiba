@@ -50,3 +50,7 @@ export default async function handler(req, res) {
     res.status(500).send("Internal Server Error");
   }
 }
+
+// 🔄 強制更新用コメント
+
+
