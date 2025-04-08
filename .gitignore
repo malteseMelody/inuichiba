@@ -11,3 +11,5 @@ Thumbs.db
 # 環境ファイル  
 .env
 .vercel
+
+.vercel

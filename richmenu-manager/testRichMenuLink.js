@@ -2,7 +2,7 @@
 
 // richmenu-manager/testRichMenuLink.js
 
-import 'dotenv/config.js';
+import 'dotenv/config';
 import line from '@line/bot-sdk';
 
 const client = new line.Client({

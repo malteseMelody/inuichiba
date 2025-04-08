@@ -1,4 +1,4 @@
-import 'dotenv/config.js'; // ← dotenvをESM風に書く方法（import形式で統一）
+import 'dotenv/config'; // ← dotenvをESM風に書く方法（import形式で統一）
 import { middleware } from '@line/bot-sdk';
 import { handleEvent } from './handlers/events.js';
 

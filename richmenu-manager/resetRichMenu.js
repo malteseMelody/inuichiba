@@ -1,6 +1,6 @@
 // 実行コマンド→　node richmenu-manager/resetRichMenu.js
 
-import 'dotenv/config.js';
+import 'dotenv/config';
 import { deleteRichMenusAndAliases } from './deleteAllRichMenus.js';
 import { handleRichMenu } from './richMenuHandler.js';
 
