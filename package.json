@@ -1,15 +1,14 @@
 {
   "name": "inuichiba",
   "version": "1.0.0",
-  "scripts": {
-    "dev": "node index.js"
-  },
   "type": "module",
+  "scripts": {
+    "build": "echo \"✅ No custom build needed\""
+  },
   "dependencies": {
     "@line/bot-sdk": "^9.7.1",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.6.0",
-    "dotenv": "^16.4.7",
-    "express": "^4.18.2"
+    "dotenv": "^16.4.7"
   }
 }

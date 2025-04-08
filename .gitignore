@@ -1,15 +1,15 @@
-# node_modules は不要
-node_modules/
-
-# Vercelのメタ情報もいらない
-.vercel/
-
-# OS・エディタごとの不要ファイル
+# OSやエディタによるゴミファイル
 .DS_Store
 Thumbs.db
 
-# 環境ファイル  
-.env
-.vercel
+# node_modules は不要
+node_modules/
 
-.vercel
+# 環境変数ファイル（絶対Gitに入れない！）
+.env.dev
+.env.production
+
+# ✅ .vercel/ は除外しない！（←これ重要）
+# ❌ .vercel/ を .gitignore に書いてると webhook.js が function として認識されない
+
+

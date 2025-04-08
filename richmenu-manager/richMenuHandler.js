@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Client } from '@line/bot-sdk'; 
-import * as messages from './data/messages.js'; // 使用されていないけど一応残しています
+import { channelAccessToken } from "../lib/env.js";
 
 // __dirname の再現（ESM用）
 const __filename = fileURLToPath(import.meta.url);
@@ -15,7 +15,7 @@ const __dirname = dirname(__filename);
 
 // LINE Bot SDKの初期設定
 const client = new Client({
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
+  channelAccessToken
 });
 
 
@@ -23,7 +23,7 @@ const client = new Client({
 // //////////////////////////////////////////////////
 // リッチメニューのサイズ
 // 次の条件をクリアすること
-// ・横幅は800px～2500px　縦幅は250px以上
+// ・横幅は800px～2500px 縦幅は250px以上
 // ・幅/高さのアスペクト比は1.45以上
 const wAll  = 2000;
 const hAll  = 1200;
@@ -38,14 +38,14 @@ const hTab  =  200;
 // 古いリッチメニューを削除し新しいリッチメニューを作成する
 // ここはメッセージを出さない
 // ファイルやリッチメニュー系のプログラムを修正したらここを実行すること
-export async function handleRichMenu(ACCESS_TOKEN) {
+export async function handleRichMenu() {
   try {
   	// 今迄あったリッチメニューを削除
 // 	await deleteRichMenusAndAliases();
   	
   	// リッチメニューを作成してリッチメニューIDを紐づける(リンクする)
-  	const aRichMenuId = await aCreateRichMenu(ACCESS_TOKEN);
-  	const bRichMenuId = await bCreateRichMenu(ACCESS_TOKEN); 
+  	const aRichMenuId = await aCreateRichMenu();
+  	const bRichMenuId = await bCreateRichMenu(); 
 	
 	if (!aRichMenuId || !bRichMenuId) {
 		console.error("❌ リッチメニューIDが取得できませんでした。処理を中止します。");
@@ -68,12 +68,12 @@ export async function handleRichMenu(ACCESS_TOKEN) {
 
 // ///////////////////////////////////////
 // リッチメニュー(タブA)の各タップ領域の定義
-async function aCreateRichMenu(ACCESS_TOKEN) {
+async function aCreateRichMenu() {
 	try {
     const richmenuA = {
     	size: { width: wAll, height: hAll },
     	selected: true,
-    	name: "タブＡ(左側メニュー)2025秋",  // バージョン管理用。.envに書いてLINEのキャッシュを強制的に削除するときにも使う
+    	name: "タブＡ(左側メニュー)2025秋",  // バージョン管理用。.env.xx..xxに書いてLINEのキャッシュを強制的に削除するときにも使う
     	chatBarText: "メニュー(表示/非表示)",
     	areas: [
       	// タブA(左側のタブ)がタップされたらタブA画面に遷移する
@@ -140,7 +140,7 @@ async function aCreateRichMenu(ACCESS_TOKEN) {
 
 // //////////////////////////////////////////////////
 // リッチメニュー(タブB)の各タップ領域の定義
-async function bCreateRichMenu(ACCESS_TOKEN) {
+async function bCreateRichMenu() {
 	try {
     const richmenuB = {
     	size: { width: wAll, height: hAll },
