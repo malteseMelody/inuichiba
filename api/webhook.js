@@ -3,6 +3,13 @@ import { middleware } from '@line/bot-sdk';
 import { channelAccessToken, channelSecret, envName } from '../lib/env.js';
 import { handleEvent } from './handlers/events.js';
 
+// POSTのみ対象
+if (process.env.VERCEL_ENV === 'preview' &&
+		req.headers['x-vercel-protection-bypass'] !== vercelBypassSecret ) {
+			console.warn("🚫 Protection Bypass ヘッダー不一致！");
+			return res.status(401).send("Unauthorized (Vercel Protection)");
+}
+
 const lineMiddleware = middleware({
   channelAccessToken,
   channelSecret,
