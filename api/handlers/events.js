@@ -102,7 +102,14 @@ async function handleMessageEvent(event, ACCESS_TOKEN) {
 
   if (data === "ワイワイ") {
     message = { type: "text", text: messages.msgY };
-  } else {
+  }
+	// LINEの応答メッセージが次のコマンドに自動応答するため
+	// エラーにしないこと。また追加の応答もしない。Supabaseにも書かない
+	else if (data === "QRコード" || data === "友だち追加") {
+		console.log("LINEの自動応答メッセージ受信：", data);
+		return;
+	}
+	else {
     message = { type: "text", text: messages.msgPostpone };
   }
 
