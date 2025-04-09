@@ -1,12 +1,9 @@
 // api/handlers/events.js
 // ✅ 最新版：events.js（.then → await / catch に統一、ログ抑制付き）
 
-import { isProd } from "../../lib/env.js";
-import { handleRichMenu } from '../../richmenu-manager/richMenuHandler.js';
 import { saveUserProfileAndWrite } from "../../lib/saveUserInfo.js";
 import { sendReplyMessage, getUserProfile } from '../../lib/lineApiHelpers.js';
 import { textMessages, mediaMessages, textTemplates, emojiMap } from '../../richmenu-manager/data/messages.js';
-import axios from 'axios';
 import * as messages from '../../richmenu-manager/data/messages.js';
 
 
