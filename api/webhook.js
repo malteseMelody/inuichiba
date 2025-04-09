@@ -1,6 +1,6 @@
 // api/webhook.js
 import { middleware } from '@line/bot-sdk';
-import { channelAccessToken, channelSecret, envName } from '../lib/env.js';
+import { channelAccessToken, channelSecret, envName, vercelBypassSecret } from '../lib/env.js';
 import { handleEvent } from './handlers/events.js';
 
 const lineMiddleware = middleware({
