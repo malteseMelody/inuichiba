@@ -1,3 +1,7 @@
+// api/handlers/events.js
+// ✅ 最新版：events.js（.then → await / catch に統一、ログ抑制付き）
+
+import { isProd } from "../../lib/env.js";
 import { handleRichMenu } from '../../richmenu-manager/richMenuHandler.js';
 import { saveUserProfileAndWrite } from "../../lib/saveUserInfo.js";
 import { sendReplyMessage, getUserProfile } from '../../lib/lineApiHelpers.js';
@@ -78,16 +82,14 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 
   // --- 書き込みはあとで非同期に（UI優先！）
   if (userId) {
-    setTimeout(function () {
-      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
-        .then(() => {
-          console.log("✅ Supabase 書き込み完了 (follow)");
-        })
-        .catch(function (err) {
-          console.warn("⚠️ follow 書き込み失敗:", err.message);
-        });
-    }, 0);
+    try {
+      await saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN);
+      console.log("✅ Supabase 書き込み完了 (follow)");
+    } catch (err) {
+      console.warn("⚠️ follow 書き込み失敗:", err.message);
+    }
   }
+
 }
 
 
@@ -117,13 +119,13 @@ async function handleMessageEvent(event, ACCESS_TOKEN) {
 
   // --- Supabase書き込みはメッセージ送信後、後回しに実行（非同期）
   if (userId) {
-    setTimeout(function () {
-      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
-        .catch(function (err) {
-          console.log("⚠️ message書き込み失敗:", err.message);
-        });
-    }, 0);
+    try {
+      await saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN);
+    } catch (err) {
+      console.log("⚠️ message書き込み失敗:", err.message);
+    }
   }
+	
 }
 
 
@@ -146,13 +148,13 @@ async function handlePostbackEvent(event, ACCESS_TOKEN) {
 
   // --- C. 書き込みは後回しで実行（レスポンスに影響させない）
   if (userId) {
-    setTimeout(function () {
-      saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN)
-        .catch(function (err) {
-          console.log("⚠️ postback書き込み失敗:", err.message);
-        });
-    }, 0);
+    try {
+      await saveUserProfileAndWrite(userId, groupId, ACCESS_TOKEN);
+    } catch (err) {
+      console.log("⚠️ postback書き込み失敗:", err.message);
+    }
   }
+	
 }
 
 
