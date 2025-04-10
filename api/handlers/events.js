@@ -94,20 +94,21 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 // messageイベントの処理（書き込みは後ろで非同期）
 async function handleMessageEvent(event, ACCESS_TOKEN) {
 	const userId = event.source?.userId ?? null;
-	const groupId = event.source?.groupId ?? null;
-	const roomId = event.source?.roomId ?? null;
-	const data = event.message.text;
+	const sourceType = event.source?.type ?? null;  // 'user' | 'group' | 'room'
+  const data = event.message.text;
+	
+	console.log("🔍 event.source:", event.source);
 
 	// LINE公式アカウントの「自動応答対象ワード」はすべてのチャットで無視（Botは返信しない）
   if (data === "QRコード" || data === "友だち追加") {
     return;
   }
 
-  // グループ・ルームならすべて無視（自動応答以外含む）
-  if (groupId || roomId) {
+  // グループ or ルームからのメッセージは完全に無視
+  if (sourceType === "group" || sourceType === "room") {
     return;
   }
-
+	
   // 以下は「個人チャット」で、自動応答以外のメッセージ
   let message = [];
 
