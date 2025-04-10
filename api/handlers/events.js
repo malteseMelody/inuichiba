@@ -385,7 +385,7 @@ async function handleJoinEvent(event, ACCESS_TOKEN) {
 
   const welcomeMessage = {
     type: "text",
-    text: "こんにちは！犬市場Botです🐶\nどうぞよろしくお願いします！"
+    text: "こんにちは！犬市場Botです🐶\nどうぞよろしくお願いします！\nグループ通知が多い場合は、通知設定をオフにしてくださいね😊"
   };
 
   await sendReplyMessage(event.replyToken, [welcomeMessage], ACCESS_TOKEN);
