@@ -93,8 +93,9 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 // ///////////////////////////////////////////
 // messageイベントの処理（書き込みは後ろで非同期）
 async function handleMessageEvent(event, ACCESS_TOKEN) {
-  const userId = event.source?.userId;
-  const groupId = event.source?.groupId;
+const userId = event.source?.userId ?? null;
+const groupId = event.source?.groupId ?? null;
+const roomId = event.source?.roomId ?? null;
   const data = event.message.text;
 
   let message = [];
@@ -109,8 +110,14 @@ async function handleMessageEvent(event, ACCESS_TOKEN) {
 		return;
 	}
 	else {
-    message = { type: "text", text: messages.msgPostpone };
-  }
+		if (groupId == null && roomId == null) {
+			message = { type: "text", text: messages.msgPostpone };
+		} eles {
+			// グループラインでいちいちメッセージを出してたらうるさい。無視する。
+			// 量も多いだろうからconsol.logにも書かない。
+			;
+		}
+	}
 
   await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
 
