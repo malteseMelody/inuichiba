@@ -3,7 +3,7 @@
 
 import { saveUserProfileAndWrite } from "../../lib/saveUserInfo.js";
 import { sendReplyMessage, getUserProfile } from '../../lib/lineApiHelpers.js';
-import { textMessages, mediaMessages, textTemplates, emojiMap } from '../../richmenu-manager/data/messages.js';
+import { textMessages, mediaMessages, lineQRMessages, textTemplates, emojiMap } from '../../richmenu-manager/data/messages.js';
 import * as messages from '../../richmenu-manager/data/messages.js';
 
 
@@ -95,30 +95,29 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 async function handleMessageEvent(event, ACCESS_TOKEN) {
 	const userId = event.source?.userId ?? null;
 	const sourceType = event.source?.type ?? null;  // 'user' | 'group' | 'room'
+	const groupId = event.source?.type === "group" ? event.source.groupId : null;
   const data = event.message.text;
 	
-	console.log("🔍 event.source:", event.source);
-
-	// LINE公式アカウントの「自動応答対象ワード」はすべてのチャットで無視（Botは返信しない）
-  if (data === "QRコード" || data === "友だち追加") {
-    return;
-  }
-
-  // グループ or ルームからのメッセージは完全に無視
-  if (sourceType === "group" || sourceType === "room") {
-    return;
-  }
+	let message = [];
 	
+	// LINE公式アカウントの「自動応答対象ワード」はBotが代わりに返信
+	if (data === "QRコード" || data === "友だち追加") {
+    message = lineQRMessages;
+  } 
+	// グループ or ルームからのメッセージは、LINE自動応答メッセージのみBotの代わりに返信
+	// 他は完全に無視
+	else if (sourceType === "group" || sourceType === "room") {
+    return;
+  }
   // 以下は「個人チャット」で、自動応答以外のメッセージ
-  let message = [];
-
-  if (data === "ワイワイ") {
-    message = { type: "text", text: messages.msgY };
-  } else {
-    message = { type: "text", text: messages.msgPostpone };
+	else if (data === "ワイワイ") {
+    message = [{ type: "text", text: messages.msgY }];
+  } 
+	else {
+    message = [{ type: "text", text: messages.msgPostpone }];
   }
 	
-  await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
+  await sendReplyMessage(event.replyToken, message, ACCESS_TOKEN);
 
   // --- Supabase書き込みはメッセージ送信後、後回しに実行（非同期）
   if (userId) {
