@@ -112,10 +112,10 @@ const roomId = event.source?.roomId ?? null;
 	else {
 		if (groupId == null && roomId == null) {
 			message = { type: "text", text: messages.msgPostpone };
-		} eles {
+		} else {
 			// グループラインでいちいちメッセージを出してたらうるさい。無視する。
 			// 量も多いだろうからconsol.logにも書かない。
-			;
+			return;
 		}
 	}
 
