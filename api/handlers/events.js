@@ -93,32 +93,30 @@ async function handleFollowEvent(event, ACCESS_TOKEN) {
 // ///////////////////////////////////////////
 // messageイベントの処理（書き込みは後ろで非同期）
 async function handleMessageEvent(event, ACCESS_TOKEN) {
-const userId = event.source?.userId ?? null;
-const groupId = event.source?.groupId ?? null;
-const roomId = event.source?.roomId ?? null;
-  const data = event.message.text;
+	const userId = event.source?.userId ?? null;
+	const groupId = event.source?.groupId ?? null;
+	const roomId = event.source?.roomId ?? null;
+	const data = event.message.text;
 
+	// LINE公式アカウントの「自動応答対象ワード」はすべてのチャットで無視（Botは返信しない）
+  if (data === "QRコード" || data === "友だち追加") {
+    return;
+  }
+
+  // グループ・ルームならすべて無視（自動応答以外含む）
+  if (groupId || roomId) {
+    return;
+  }
+
+  // 以下は「個人チャット」で、自動応答以外のメッセージ
   let message = [];
 
   if (data === "ワイワイ") {
     message = { type: "text", text: messages.msgY };
+  } else {
+    message = { type: "text", text: messages.msgPostpone };
   }
-	// LINEの応答メッセージが次のコマンドに自動応答するため
-	// エラーにしないこと。また追加の応答もしない。Supabaseにも書かない
-	else if (data === "QRコード" || data === "友だち追加") {
-		console.log("LINEの自動応答メッセージ受信：", data);
-		return;
-	}
-	else {
-		if (groupId == null && roomId == null) {
-			message = { type: "text", text: messages.msgPostpone };
-		} else {
-			// グループラインでいちいちメッセージを出してたらうるさい。無視する。
-			// 量も多いだろうからconsol.logにも書かない。
-			return;
-		}
-	}
-
+	
   await sendReplyMessage(event.replyToken, [message], ACCESS_TOKEN);
 
   // --- Supabase書き込みはメッセージ送信後、後回しに実行（非同期）
