@@ -88,9 +88,10 @@ const mediaMessages = {
 };
 
 // "QRコード"、"友だち追加"が入力されたときのmessage
-// (テキスト送信時に表示される)バナーがうっとうしいので画像だけ送るようにする
+// 現状自動応答メッセージがメッセージだけ出しているので、
+// Botはメッセージは抑制してQRコードだけ表示する
 const lineQRMessages = [
-//	{ type: "text", text: lineQRtext },
+// { type: "text", text: lineQRtext },
 	{
 		type: "image",
     originalContentUrl:	`${baseDir}images/lineQRcode.png`,
